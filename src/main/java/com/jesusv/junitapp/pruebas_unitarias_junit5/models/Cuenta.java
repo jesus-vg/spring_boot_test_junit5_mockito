@@ -1,5 +1,6 @@
 package com.jesusv.junitapp.pruebas_unitarias_junit5.models;
 
+import ch.qos.logback.core.joran.util.beans.BeanUtil;
 import com.jesusv.junitapp.pruebas_unitarias_junit5.exceptions.DineroInsuficienteException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,11 +11,15 @@ import java.util.Objects;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class Cuenta {
   private String     persona;
   private BigDecimal saldo;
-  private Banco banco;
+  private Banco      banco;
+
+  public Cuenta( String persona, BigDecimal saldo ) {
+    this.persona = persona;
+    this.saldo = saldo;
+  }
 
   @Override
   public boolean equals( Object o ) {

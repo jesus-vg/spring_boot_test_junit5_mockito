@@ -71,7 +71,7 @@ class CuentaTest {
   @Test
   @DisplayName("Prueba para hacer la transferencia")
   void testTranferirDineroCuentas() {
-    Cuenta cuentaOrigen = new Cuenta( "Jesus", new BigDecimal( "100000.67" ) );
+    Cuenta cuentaOrigen  = new Cuenta( "Jesus", new BigDecimal( "100000.67" ) );
     Cuenta cuentaDestino = new Cuenta( "Lupe", new BigDecimal( "50000.00" ) );
 
     Banco banco = new Banco();
@@ -81,4 +81,49 @@ class CuentaTest {
     assertEquals( "50000.67", cuentaOrigen.getSaldo().toPlainString() );
     assertEquals( "100000.00", cuentaDestino.getSaldo().toPlainString() );
   }
+
+  @Test
+  @DisplayName("Relacion entre cuentas")
+  void testRelacionEntreCuentas() {
+    Cuenta cuentaOrigen  = new Cuenta( "Jesus", new BigDecimal( "100000.67" ) );
+    Cuenta cuentaDestino = new Cuenta( "Lupe", new BigDecimal( "50000.00" ) );
+
+    Banco banco = new Banco();
+    banco.addCuenta( cuentaOrigen );
+    banco.addCuenta( cuentaDestino );
+    banco.setNombre( "Banco del estado" );
+    banco.tranferirDinero( cuentaOrigen, cuentaDestino, new BigDecimal( "50000" ) );
+
+    assertEquals( "50000.67", cuentaOrigen.getSaldo().toPlainString() );
+    assertEquals( "100000.00", cuentaDestino.getSaldo().toPlainString() );
+
+    assertEquals( 2, banco.getCuentas().size() );
+    assertEquals( "Banco del estado", cuentaOrigen.getBanco().getNombre() );
+    // validamos que la persona tenga una cuenta en el banco
+    assertEquals(
+        "Jesus",
+        banco.getCuentas()
+            .stream()
+            .filter( cuenta -> cuenta.getPersona().equals( "Jesus" ) )
+            .findFirst()
+            .get()
+            .getPersona()
+    );
+    // validamos que la persona tenga una cuenta en el banco OPCION 2
+    assertTrue(
+        banco.getCuentas()
+            .stream()
+            .filter( cuenta -> cuenta.getPersona().equals( "Jesus" ) )
+            .findFirst()
+            .isPresent()
+    );
+
+    // validamos que la persona tenga una cuenta en el banco OPCIÓN 3
+    assertTrue(
+        banco.getCuentas()
+            .stream()
+            .anyMatch( cuenta -> cuenta.getPersona().equals( "Jesus" ) )
+    );
+  }
+
 }

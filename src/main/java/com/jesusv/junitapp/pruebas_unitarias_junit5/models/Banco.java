@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -12,6 +13,10 @@ public class Banco {
   private List<Cuenta> cuentas;
   private String       nombre;
 
+  public Banco() {
+    this.cuentas = new ArrayList<>();
+  }
+
   public void tranferirDinero( Cuenta origen, Cuenta destino, BigDecimal monto ) {
     origen.debito( monto );
     destino.credito( monto );
@@ -19,5 +24,6 @@ public class Banco {
 
   public void addCuenta( Cuenta cuenta ) {
     cuentas.add( cuenta );
+    cuenta.setBanco( this );
   }
 }
