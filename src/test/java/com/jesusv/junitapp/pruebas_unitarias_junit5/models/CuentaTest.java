@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CuentaTest {
 
   @Test
-  @DisplayName("Compara si el nombre de la persona es igual a la esperada en la prueba")
+  @DisplayName( "Compara si el nombre de la persona es igual a la esperada en la prueba" )
   void testNombreCuenta() {
     Cuenta cuenta   = new Cuenta( "Jesus", BigDecimal.ONE );
     String esperado = cuenta.getPersona();
@@ -26,7 +27,7 @@ class CuentaTest {
   }
 
   @Test
-  @DisplayName("Validar cuenta del usario")
+  @DisplayName( "Validar cuenta del usario" )
   void testSaldoCuenta() {
     Cuenta cuenta = new Cuenta( "Jesus", BigDecimal.ONE );
     assertEquals( 1, cuenta.getSaldo().doubleValue() );
@@ -34,7 +35,7 @@ class CuentaTest {
   }
 
   @Test
-  @DisplayName("Validar que sea el mismo objeto")
+  @DisplayName( "Validar que sea el mismo objeto" )
   void testReferenciaCuenta() {
     Cuenta cuenta  = new Cuenta( "jesus", BigDecimal.TEN );
     Cuenta cuenta2 = new Cuenta( "jesus", BigDecimal.TEN );
@@ -57,7 +58,7 @@ class CuentaTest {
   }
 
   @Test
-  @DisplayName("validar que el saldo no sea negativo")
+  @DisplayName( "validar que el saldo no sea negativo" )
   void testDineroInsuficienteException() {
     Cuenta cuenta = new Cuenta( "Jesus", new BigDecimal( "9000.67" ) );
     Exception exception = assertThrows( DineroInsuficienteException.class, () -> {
@@ -69,7 +70,7 @@ class CuentaTest {
   }
 
   @Test
-  @DisplayName("Prueba para hacer la transferencia")
+  @DisplayName( "Prueba para hacer la transferencia" )
   void testTranferirDineroCuentas() {
     Cuenta cuentaOrigen  = new Cuenta( "Jesus", new BigDecimal( "100000.67" ) );
     Cuenta cuentaDestino = new Cuenta( "Lupe", new BigDecimal( "50000.00" ) );
@@ -83,7 +84,7 @@ class CuentaTest {
   }
 
   @Test
-  @DisplayName("Relacion entre cuentas")
+  @DisplayName( "Relacion entre cuentas" )
   void testRelacionEntreCuentas() {
     Cuenta cuentaOrigen  = new Cuenta( "Jesus", new BigDecimal( "100000.67" ) );
     Cuenta cuentaDestino = new Cuenta( "Lupe", new BigDecimal( "50000.00" ) );
@@ -101,29 +102,83 @@ class CuentaTest {
     assertEquals( "Banco del estado", cuentaOrigen.getBanco().getNombre() );
     // validamos que la persona tenga una cuenta en el banco
     assertEquals(
-        "Jesus",
-        banco.getCuentas()
+      "Jesus",
+      banco.getCuentas()
+        .stream()
+        .filter( cuenta -> cuenta.getPersona().equals( "Jesus" ) )
+        .findFirst()
+        .get()
+        .getPersona()
+    );
+    // validamos que la persona tenga una cuenta en el banco OPCION 2
+    assertTrue(
+      banco.getCuentas()
+        .stream()
+        .filter( cuenta -> cuenta.getPersona().equals( "Jesus" ) )
+        .findFirst()
+        .isPresent()
+    );
+
+    // validamos que la persona tenga una cuenta en el banco OPCIÓN 3
+    assertTrue(
+      banco.getCuentas()
+        .stream()
+        .anyMatch( cuenta -> cuenta.getPersona().equals( "Jesus" ) )
+    );
+  }
+
+  @Test
+  @DisplayName( "Relacion entre cuentas con asserstAll" )
+  void testRelacionEntreCuentas2() {
+    Cuenta cuentaOrigen  = new Cuenta( "Jesus", new BigDecimal( "100000.67" ) );
+    Cuenta cuentaDestino = new Cuenta( "Lupe", new BigDecimal( "50000.00" ) );
+
+    Banco banco = new Banco();
+    banco.addCuenta( cuentaOrigen );
+    banco.addCuenta( cuentaDestino );
+    banco.setNombre( "Banco del estado" );
+    banco.tranferirDinero( cuentaOrigen, cuentaDestino, new BigDecimal( "50000" ) );
+
+    assertAll(
+      () -> assertEquals(
+        "50000.67",
+        cuentaOrigen.getSaldo().toPlainString(),
+        () -> "saldo restante es igual a esperado"
+      ),
+      () -> assertEquals(
+        "100000.00",
+        cuentaDestino.getSaldo().toPlainString(),
+        () -> "El saldo transferido coincide"
+      ),
+      () -> assertEquals( 2, banco.getCuentas().size() ),
+      () -> assertEquals( "Banco del estado", cuentaOrigen.getBanco().getNombre() ),
+      () -> // validamos que la persona tenga una cuenta en el banco
+        assertEquals(
+          "Jesus",
+          banco.getCuentas()
             .stream()
             .filter( cuenta -> cuenta.getPersona().equals( "Jesus" ) )
             .findFirst()
             .get()
             .getPersona()
-    );
-    // validamos que la persona tenga una cuenta en el banco OPCION 2
-    assertTrue(
-        banco.getCuentas()
+        ),
+      () -> // validamos que la persona tenga una cuenta en el banco OPCION 2
+        assertTrue(
+          banco.getCuentas()
             .stream()
             .filter( cuenta -> cuenta.getPersona().equals( "Jesus" ) )
             .findFirst()
             .isPresent()
-    );
-
-    // validamos que la persona tenga una cuenta en el banco OPCIÓN 3
-    assertTrue(
-        banco.getCuentas()
+        ),
+      () -> // validamos que la persona tenga una cuenta en el banco OPCIÓN 3
+        assertTrue(
+          banco.getCuentas()
             .stream()
             .anyMatch( cuenta -> cuenta.getPersona().equals( "Jesus" ) )
+        )
     );
+
+
   }
 
 }
