@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.RepetitionInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
@@ -286,5 +288,15 @@ class CuentaTest {
     }
   }
 
+  @RepeatedTest( value = 5, name = "Step {currentRepetition} de {totalRepetitions}" )
+  @DisplayName( "Test que se repite" )
+  void testDebitoCuenta( RepetitionInfo repetitionInfo ) {
+    if ( repetitionInfo.getCurrentRepetition() == repetitionInfo.getTotalRepetitions() ) {
+      System.out.println( "Fin del bucle" );
+    }
+    Cuenta cuenta = new Cuenta( "Jesus", new BigDecimal( "9000.67" ) );
+    cuenta.debito( new BigDecimal( "5000.67" ) );
+    assertEquals( 4000, cuenta.getSaldo().doubleValue() );
+  }
 
 }
