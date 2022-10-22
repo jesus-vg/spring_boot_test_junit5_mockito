@@ -34,8 +34,13 @@ public class Cuenta {
     return Objects.hash( persona, saldo );
   }
 
+  /**
+   * Validar que no se permita tener valores negativos.
+   * @param debito La cantidad a restar
+   */
   public void debito( BigDecimal debito ) {
     BigDecimal nuevoSaldo = saldo.subtract( debito );
+
     if ( nuevoSaldo.compareTo( BigDecimal.ZERO ) < 0 ) {
       throw new DineroInsuficienteException( "Dinero insuficiente" );
     }
